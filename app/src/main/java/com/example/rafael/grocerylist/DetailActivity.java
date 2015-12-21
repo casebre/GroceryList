@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -34,10 +35,21 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         Intent i = getIntent();
-        int idList = i.getIntExtra("List",-1);
+        int listId = i.getIntExtra("ListId",-1);
 
-        if (idList != -1)
-            Log.i("", "Failed");
+        if (listId != -1) {
+            TextView textView;
+            switch (listId) {
+                case 0:
+                    textView = (TextView) findViewById(R.id.textView3);
+                    textView.setText("Freshco!!");
+                    break;
+                default:
+                    textView = (TextView) findViewById(R.id.textView3);
+                    textView.setText("No data found");
+                    break;
+            }
+        }
         else
             Log.i("", "List found!");
 
