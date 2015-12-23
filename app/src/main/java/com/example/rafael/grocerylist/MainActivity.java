@@ -1,6 +1,9 @@
 package com.example.rafael.grocerylist;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,13 +13,23 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    public void addNewList(View view) {
+        Intent i = new Intent(getApplicationContext(), NewListActivity.class);
+        startActivity(i);
+    }
 
     public void showDetails(View view) {
         Intent i = new Intent(getApplicationContext(), DetailActivity.class);
@@ -41,12 +54,46 @@ public class MainActivity extends AppCompatActivity {
 
         ListView list = (ListView)findViewById(R.id.listViewGroceryList);
 
-        ArrayList<String> createdList = new ArrayList<String>();
-        createdList.add("Freshco");
-        createdList.add("Current");
+        try {
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, createdList);
-        list.setAdapter(arrayAdapter);
+            SQLiteDatabase groceryList = this.openOrCreateDatabase("Grocery", MODE_PRIVATE, null);
+
+            String query = "CREATE TABLE IF NOT EXISTS GroceryList (" +
+                    "IdList INT," +
+                    "Name VARCHAR," +
+                    "CreateDate DATETIME, " +
+                    "UpdateDate DATETIME," +
+                    "Active INT) ";
+
+            groceryList.execSQL(query);
+
+            query = "SELECT rowid _id   , " +
+                    "Name " +
+                    "FROM GroceryList ";
+
+            Cursor cursor = groceryList.rawQuery(query, null);
+
+            String[] columns = new String[] {"Name"};
+            int[] to = new int[] {R.id.textView5};
+
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getBaseContext(), R.layout.activity_main, cursor, columns, to,0);
+
+
+            /*if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    listMap.put(cursor.getInt(0),cursor.getString(1));
+                } while (cursor.moveToNext());
+            }
+            */
+            list.setAdapter(adapter);
+            groceryList.close();
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,createdList);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -56,9 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
-
     }
 
     @Override

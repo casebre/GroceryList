@@ -317,6 +317,7 @@
     <!-- From: file:/home/rafael/AndroidStudioProjects/GroceryList/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_new_list">NewListActivity</string>
     <!-- From: file:/home/rafael/AndroidStudioProjects/GroceryList/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/values/values.xml -->
     <eat-comment/>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
