@@ -23,6 +23,9 @@ import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,46 +56,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ListView list = (ListView)findViewById(R.id.listViewGroceryList);
+        List<GroceryList> listGrocery = null;
 
         try {
-
-            SQLiteDatabase groceryList = this.openOrCreateDatabase("Grocery", MODE_PRIVATE, null);
-
-            String query = "CREATE TABLE IF NOT EXISTS GroceryList (" +
-                    "IdList INT," +
-                    "Name VARCHAR," +
-                    "CreateDate DATETIME, " +
-                    "UpdateDate DATETIME," +
-                    "Active INT) ";
-
-            groceryList.execSQL(query);
-
-            query = "SELECT rowid _id   , " +
-                    "Name " +
-                    "FROM GroceryList ";
-
-            Cursor cursor = groceryList.rawQuery(query, null);
-
-            String[] columns = new String[] {"Name"};
-            int[] to = new int[] {R.id.textView5};
-
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getBaseContext(), R.layout.activity_main, cursor, columns, to,0);
-
-
-            /*if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    listMap.put(cursor.getInt(0),cursor.getString(1));
-                } while (cursor.moveToNext());
-            }
-            */
-            list.setAdapter(adapter);
-            groceryList.close();
+            listGrocery = GroceryList.List(this);
+            CustomAdapterGrocery adapterGrocery = new CustomAdapterGrocery(this, listGrocery);
+            list.setAdapter(adapterGrocery);
         }
         catch (Exception e) {
-
             e.printStackTrace();
-
         }
+
         //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,createdList);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
