@@ -5,20 +5,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static android.database.sqlite.SQLiteDatabase.openDatabase;
-import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 
 /**
  * Created by rafael on 01/01/16.
  */
-public class GroceryList {
+public class GroceryList implements OnTaskCompleted {
 
     private Integer id;
     private String name;
     private Context context;
+    private OnTaskCompleted listener;
 
 
     public Integer getId() {
@@ -44,7 +41,7 @@ public class GroceryList {
         this.context = context;
 
         try {
-            SQLiteDatabase groceryList = this.context.openOrCreateDatabase("Grocery", Context.MODE_PRIVATE, null); //("Grocery", Context.MODE_PRIVATE, null, null);
+            SQLiteDatabase groceryList = this.context.openOrCreateDatabase("Grocery", Context.MODE_PRIVATE, null);
 
             /* String query = "CREATE TABLE IF NOT EXISTS GroceryList (" +
                     "IdList INT," +
@@ -85,7 +82,6 @@ public class GroceryList {
 
         List<GroceryList> list = new ArrayList<GroceryList>();
 
-
         try {
             SQLiteDatabase groceryList = context.openOrCreateDatabase("Grocery", Context.MODE_PRIVATE, null); //("Grocery", Context.MODE_PRIVATE, null, null);
 
@@ -98,7 +94,8 @@ public class GroceryList {
                     */
 
             String query =
-                    "SELECT rowid _id   , " +
+                    "SELECT " +
+                            " rowid _id   , " +
                             "Name " +
                             "FROM GroceryList ";
 
@@ -121,5 +118,10 @@ public class GroceryList {
         }
 
         return list;
+    }
+
+    @Override
+    public void onTaskCompleted() {
+
     }
 }

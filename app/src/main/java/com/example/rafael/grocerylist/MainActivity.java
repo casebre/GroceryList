@@ -1,33 +1,26 @@
 package com.example.rafael.grocerylist;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
+    List<GroceryList> listGrocery = null;
+    int start = 0, end = 5, position = 0;
+    public final int BLOCK = 5;
 
     public void addNewList(View view) {
         Intent i = new Intent(getApplicationContext(), NewListActivity.class);
@@ -47,27 +40,51 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab.setImageResource(R.drawable.ic_menu_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                  //      .setAction("Action", null).show();
+
+                Intent i = new Intent(getApplicationContext(), NewListActivity.class);
+                startActivity(i);
             }
         });
 
-        ListView list = (ListView)findViewById(R.id.listViewGroceryList);
-        List<GroceryList> listGrocery = null;
 
-        try {
-            listGrocery = GroceryList.List(this);
-            CustomAdapterGrocery adapterGrocery = new CustomAdapterGrocery(this, listGrocery);
-            list.setAdapter(adapterGrocery);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,createdList);
+        final ListView list = (ListView)findViewById(R.id.listViewGroceryList);
+        listGrocery = GroceryList.List(this);
+
+
+        final CustomAdapterGrocery[] adapterGrocery = {new CustomAdapterGrocery(this, listGrocery.subList(start, end))};
+        list.setAdapter(adapterGrocery[0]);
+
+            if (listGrocery.size() > end) {
+                // Creating new button that allow users to show more items
+                Button loadMore = new Button(this);
+                loadMore.setText("Load More");
+                list.addFooterView(loadMore);
+
+                loadMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (listGrocery.size() < (end+BLOCK))
+                            end = listGrocery.size();
+                        else
+                            end += BLOCK;
+
+                        position = list.getFirstVisiblePosition();
+
+                        adapterGrocery[0] = new CustomAdapterGrocery(MainActivity.this, listGrocery.subList(start, end));
+                        list.setAdapter(adapterGrocery[0]);
+                        list.setSelectionFromTop(position + 1, 0);
+
+                    }
+                });
+            }
+
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    public void onTaskCompleted() {
+        Toast.makeText(this, "Task has finished", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -99,5 +120,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class PerformTask extends AsyncTask {
+
+        private OnTaskCompleted listener;
+
+        public void PerformTask(OnTaskCompleted listener) {
+            this.listener = listener;
+        }
+        @Override
+        protected Object doInBackground(Object[] params) {
+            return null;
+        }
+
+        protected void onPostExecute(String s) {
+            listener.onTaskCompleted();
+        }
     }
 }
